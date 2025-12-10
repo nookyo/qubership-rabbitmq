@@ -112,6 +112,7 @@ jobs:
   #     - name: Docker
   #       uses: netcracker/qubership-workflow-hub/actions/docker-action@396774180000abdb825cbf150b56cc59c6913db8 #2.0.5
   #       with:
+  #         ref: ${{ env.TECH_BRANCH }}
   #         component: ${{ toJson(matrix.component) }}
   #         download-artifact: false
   #         platforms: ${{ needs.update-image-reference.outputs.platforms }}
