@@ -90,6 +90,7 @@ jobs:
         uses: netcracker/qubership-workflow-hub/actions/metadata-action@396774180000abdb825cbf150b56cc59c6913db8 #2.0.5
         id: meta
         with:
+          ref: ${{ env.TECH_BRANCH }}
           default-template: "{{ref-name}}"
           extra-tags: ${{ env.EVENT_TAG }}
           replace-symbol: "_"
