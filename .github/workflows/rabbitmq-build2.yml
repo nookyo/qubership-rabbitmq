@@ -44,10 +44,10 @@ jobs:
           echo "EVENT_REPO=${{ env.EVENT_REPO }}"
           echo "EVENT_TARGET_BRANCH=${{ env.EVENT_TARGET_BRANCH }}"
 
-      # - name: Checkout
-      #   uses: actions/checkout@v6
-      #   with:
-      #     ref: ${{ env.EVENT_TARGET_BRANCH }}
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.EVENT_TARGET_BRANCH }}
 
       - name: Create or upade tech branch
         run: |
