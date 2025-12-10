@@ -2,7 +2,7 @@ name: RabbitMQ Integration Build
 run-name: "Event: Tag ${{ github.event.client_payload.tag }} from ${{ github.event.client_payload.repo }} MANAGMENT_IMAGE ${{ github.event.client_payload.management_image }} #${{ github.run_number }}"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
   actions: read
 
