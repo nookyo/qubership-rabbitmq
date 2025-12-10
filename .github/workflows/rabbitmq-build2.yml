@@ -12,13 +12,14 @@ on:
   workflow_dispatch:
 
 env:
-  EVENT_TAG_NAME: ${{ github.event.client_payload.tag }}
+  EVENT_TAG: ${{ github.event.client_payload.tag }}
   EVENT_BASE_IMAGE: ${{ github.event.client_payload.base_image }}
   EVENT_MANAGMENT_IMAGE: ${{ github.event.client_payload.management_image }}
   EVENT_OWNER: ${{ github.event.client_payload.owner }}
   EVENT_REPO: ${{ github.event.client_payload.repo }}
   EVENT_TARGET_BRANCH: ${{ github.event.client_payload.target_branch }}
-#  TAG_NAME: ${{ github.event.release.tag_name || github.ref }}
+  EVENT_FORCE_CREATE: ${{ github.event.client_payload.force_create }}
+  TECH_BRANCH: feature/integration-build
 
 concurrency:
   # On main/release, we don't want any jobs cancelled so the sha is used to name the group
@@ -37,12 +38,13 @@ jobs:
     steps:
       - name: Check payload
         run: |
-          echo "EVENT_TAG_NAME=${{ env.EVENT_TAG_NAME }}"
+          echo "EVENT_TAG=${{ env.EVENT_TAG }}"
           echo "BASE_IMAGE=${{ env.EVENT_BASE_IMAGE }}"
           echo "MANAGMENT_IMAGE=${{ env.EVENT_MANAGMENT_IMAGE }}"
           echo "EVENT_OWNER=${{ env.EVENT_OWNER }}"
           echo "EVENT_REPO=${{ env.EVENT_REPO }}"
           echo "EVENT_TARGET_BRANCH=${{ env.EVENT_TARGET_BRANCH }}"
+          echo "EVENT_FORCE_CREATE=${{ env.EVENT_FORCE_CREATE }}"
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,13 +54,28 @@ jobs:
       - name: Create or upade tech branch
         run: |
 
-          git fetch origin
-          if git show-ref --verify --quiet refs/heads/feature/integration-build; then
-            git checkout feature/integration-build
-            git reset --hard origin/${{ env.EVENT_TARGET_BRANCH }}
+          TECH_BRANCH="${{ env.TECH_BRANCH }}"
+          TARGET_BRANCH="${{ env.EVENT_TARGET_BRANCH }}"
+
+          if git show-ref --verify --quiet "refs/heads/$TECH_BRANCH"; then
+            echo "Local branch $TECH_BRANCH exists. Updating from origin/$TARGET_BRANCH"
+            git checkout "$TECH_BRANCH"
+            git reset --hard "origin/$TARGET_BRANCH"
           else
-            git checkout -b feature/integration-build origin/${{ env.EVENT_TARGET_BRANCH }}
+            echo "Local branch $TECH_BRANCH does not exist. Creating from origin/$TARGET_BRANCH"
+            git checkout -b "$TECH_BRANCH" "origin/$TARGET_BRANCH"
           fi
+
+          git push origin "$TECH_BRANCH"
+
+          echo "target_branch=$TECH_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.TECH_BRANCH }}
+          fetch-depth: 0
+
       - name: Load Config
         id: load_config
         run: |
@@ -72,7 +89,7 @@ jobs:
         id: meta
         with:
           default-template: "{{ref-name}}"
-          extra-tags: ${{ env.EVENT_TAG_NAME }}
+          extra-tags: ${{ env.EVENT_TAG }}
           replace-symbol: "_"
 
   # multiplatform_build:
