@@ -38,4 +38,4 @@ jobs:
 
           git checkout -B "$TECH_BRANCH" "origin/$TARGET_BRANCH"
           git push origin "$TECH_BRANCH" --force
-          echo "target_branch=$TECH_BRANCH" >> "$GITHUB_OUTPUT
+          echo "target_branch=$TECH_BRANCH" >> "$GITHUB_OUTPUT"
