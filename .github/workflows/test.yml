@@ -1,0 +1,33 @@
+name: TEst tech branch
+on:
+  workflow_dispatch:
+    inputs:
+      TECH_BRANCH:
+        description: "Tech branch name"
+        required: true
+        default: "feature/integration-build"
+      EVENT_TARGET_BRANCH:
+        description: "Target branch to base the tech branch on"
+        required: true
+        default: "main"
+jobs:
+  print-tech-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print tech branch name
+        run: |
+          echo "Tech branch name is: ${{ github.event.inputs.TECH_BRANCH }}"
+          echo "Target branch is: ${{ github.event.inputs.EVENT_TARGET_BRANCH }}"
+          set -e
+
+          TECH_BRANCH="${{ inputs.TECH_BRANCH }}"
+          TARGET_BRANCH="${{ inputs.EVENT_TARGET_BRANCH }}"
+
+          git fetch origin "$TARGET_BRANCH"
+
+          echo "Resetting $TECH_BRANCH to origin/$TARGET_BRANCH"
+
+          git checkout -B "$TECH_BRANCH" "origin/$TARGET_BRANCH"
+          git push origin "$TECH_BRANCH" --force-with-lease
+
+          echo "target_branch=$TECH_BRANCH" >> "$GITHUB_OUTPUT
