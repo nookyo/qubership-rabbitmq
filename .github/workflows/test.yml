@@ -37,6 +37,5 @@ jobs:
           echo "Resetting $TECH_BRANCH to origin/$TARGET_BRANCH"
 
           git checkout -B "$TECH_BRANCH" "origin/$TARGET_BRANCH"
-          git push origin "$TECH_BRANCH" --force-with-lease
-
+          git push origin "$TECH_BRANCH" --force
           echo "target_branch=$TECH_BRANCH" >> "$GITHUB_OUTPUT
