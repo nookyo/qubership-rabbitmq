@@ -1,4 +1,4 @@
-name: TEst tech branch
+name: Test tech branch
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +10,10 @@ on:
         description: "Target branch to base the tech branch on"
         required: true
         default: "main"
+permissions:
+  contents: write
+  packages: write
+  actions: read
 jobs:
   print-tech-branch:
     runs-on: ubuntu-latest
